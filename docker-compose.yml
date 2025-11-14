@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  websocket-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    networks:
+      - websocket-network
+
+  websocket-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - websocket-server
+    environment:
+      - WS_CLIENT_URL=ws://websocket-server:8080/ws
+      - MIX_ENV=prod
+    networks:
+      - websocket-network
+
+networks:
+  websocket-network:
+    driver: bridge

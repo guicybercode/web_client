@@ -1,3 +1,4 @@
 import Config
 
-config :ws_client, start_connection: false
+config :ws_client,
+  auto_start: false

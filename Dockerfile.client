@@ -1,0 +1,22 @@
+FROM elixir:1.14-alpine AS builder
+
+WORKDIR /app
+
+COPY client/mix.exs client/mix.lock ./
+RUN mix deps.get --only prod
+
+COPY client/ ./
+RUN mix compile
+
+FROM elixir:1.14-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/_build/prod/lib /app/lib
+COPY --from=builder /app/_build/prod/consolidated /app/consolidated
+COPY --from=builder /app/mix.exs /app/mix.exs
+COPY --from=builder /app/config /app/config
+
+EXPOSE 4000
+
+CMD ["mix", "run", "--no-halt"]
